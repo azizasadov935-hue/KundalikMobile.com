@@ -1,168 +1,81 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KundalikMobile — Dashboard</title>
+import { useState } from "react";
 
-<style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-    body{
-        background:linear-gradient(135deg,#0f0f1a,#1b2d4d,#0f1628);
-        min-height:100vh;
-        color:#fff;
-    }
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [selectedClass, setSelectedClass] = useState(null);
 
-    /* NAVBAR (Kundalik uslubida) */
-    .navbar{
-        width:100%;
-        background:rgba(255,255,255,0.07);
-        backdrop-filter:blur(12px);
-        border-bottom:1px solid rgba(255,255,255,0.15);
-        display:flex;
-        padding:16px;
-        font-size:20px;
-        font-weight:600;
-    }
+  const classes = [];
+  const grades = ["A", "B", "V", "D"];
+  for (let i = 1; i <= 11; i++) {
+    grades.forEach(g => classes.push(`${i}${g}`));
+  }
 
-    /* BO'LIMLAR MENYUSI */
-    .top-menu{
-        display:flex;
-        overflow-x:auto;
-        padding:10px 12px;
-        gap:12px;
-        background:rgba(255,255,255,0.05);
-        backdrop-filter:blur(10px);
-        border-bottom:1px solid rgba(255,255,255,0.1);
-    }
-    .menu-item{
-        padding:10px 18px;
-        background:rgba(255,255,255,0.07);
-        border-radius:10px;
-        font-size:14px;
-        white-space:nowrap;
-        cursor:pointer;
-        transition:.3s;
-    }
-    .menu-item.active{
-        background:#4c73ff;
-        box-shadow:0 0 12px #4c73ff;
-    }
+  const subjects = [
+    "Matematika", "Ingliz tili", "Ona tili", "Fizika", "Kimyo",
+    "Biologiya", "Tarix", "Geografiya", "Informatika",
+    "Musiqa", "San’at", "Sport", "Texnologiya", "IQTISOD",
+    "Psixologiya", "Falsafa", "Sotsiologiya", "Fransuz tili"
+  ];
 
-    /* DASHBOARD KARTALARI */
-    .section-title{
-        margin:20px 15px 8px;
-        font-size:20px;
-        font-weight:600;
-    }
+  // Login UI
+  if (!user) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-700 font-sans">
+        <div className="bg-white rounded-3xl p-10 shadow-2xl w-full max-w-sm fade-in">
+          <h1 className="text-3xl font-bold text-purple-900 text-center mb-6">KundalikMobile</h1>
+          <input type="text" placeholder="Login" className="w-full p-3 mb-4 rounded-xl border border-gray-300 focus:outline-none"/>
+          <input type="password" placeholder="Parol" className="w-full p-3 mb-4 rounded-xl border border-gray-300 focus:outline-none"/>
+          <button
+            onClick={() => setUser("Aziz Asadov")}
+            className="w-full p-3 rounded-xl font-bold text-white bg-gradient-to-br from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition-colors"
+          >
+            Kirish
+          </button>
+          <div className="mt-4 text-center text-white text-opacity-80 backdrop-blur-md rounded-xl p-2">
+            🤖 AI avtologin yoqilgan — internet bo‘lsa avtomatik kiradi
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-    .cards-row{
-        display:flex;
-        gap:14px;
-        overflow-x:auto;
-        padding:0 15px;
-    }
-    .card{
-        background:rgba(255,255,255,0.08);
-        backdrop-filter:blur(14px);
-        padding:18px;
-        border-radius:16px;
-        min-width:200px;
-        border:1px solid rgba(255,255,255,0.1);
-        animation:pop .5s ease;
-    }
-    @keyframes pop{
-        from{opacity:0;transform:translateY(15px);}
-        to{opacity:1;transform:translateY(0);}
-    }
+  // Dashboard UI
+  return (
+    <div className="min-h-screen p-6 bg-gradient-to-br from-blue-500 to-purple-700">
+      <div className="flex justify-between items-center mb-6 text-white">
+        <h1 className="text-2xl font-bold">KundalikMobile Dashboard</h1>
+        <button onClick={() => { setUser(null); setSelectedClass(null); }} className="bg-red-600 p-2 rounded-lg hover:bg-red-700 transition-colors">Chiqish</button>
+      </div>
 
-    .card h3{
-        font-size:17px;
-        margin-bottom:6px;
-        color:#dfe4ff;
-    }
-    .card p{font-size:13px;color:#c9d1e6;}
+      {/* Sinflar */}
+      <h2 className="text-white text-xl mb-4">Sinflar</h2>
+      <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-8 gap-3 mb-6">
+        {classes.map((c, idx) => (
+          <div
+            key={idx}
+            onClick={() => setSelectedClass(c)}
+            className={`cursor-pointer text-center p-3 rounded-xl shadow-lg font-bold text-white
+              ${selectedClass === c ? "bg-purple-700" : "bg-purple-500 hover:bg-purple-600 transition-colors"}`}
+          >
+            {c}
+          </div>
+        ))}
+      </div>
 
-    /* POST BLOKLARI */
-    .post{
-        margin:15px;
-        background:rgba(255,255,255,0.07);
-        padding:18px;
-        border-radius:16px;
-        border:1px solid rgba(255,255,255,0.1);
-    }
-    .post h4{font-size:16px;margin-bottom:5px;}
-    .post small{color:#a9b2c9;}
-
-    /* AI INOKOCHA */
-    .ai{
-        position:fixed;
-        bottom:25px;
-        right:22px;
-        width:62px;height:62px;
-        background:#4c73ff;
-        border-radius:50%;
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        font-size:28px;
-        box-shadow:0 0 18px #4c73ff;
-        cursor:pointer;
-        animation:float 2.4s infinite ease-in-out;
-    }
-    @keyframes float{
-        0%{transform:translateY(0);}
-        50%{transform:translateY(-7px);}
-        100%{transform:translateY(0);}
-    }
-</style>
-</head>
-
-<body>
-
-<div class="navbar">KundalikMobile</div>
-
-<!-- MENYU (Kundalikga o'xshash) -->
-<div class="top-menu">
-    <div class="menu-item active">Ta'lim</div>
-    <div class="menu-item">Muloqot</div>
-    <div class="menu-item">Ilovalar</div>
-    <div class="menu-item">Uy vazifa</div>
-    <div class="menu-item">O‘qituvchi</div>
-</div>
-
-<!-- DARS JADVALLARI -->
-<h2 class="section-title">Bugungi darslar</h2>
-<div class="cards-row">
-    <div class="card">
-        <h3>Biologiya</h3>
-        <p>08:00 – 08:45</p>
+      {/* Tanlangan sinfning fanlari */}
+      {selectedClass && (
+        <div className="bg-white rounded-3xl p-6 shadow-2xl fade-in">
+          <h3 className="text-purple-900 text-xl font-bold mb-4">Sinf: {selectedClass}</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {subjects.map((sub, idx) => (
+              <div key={idx} className="bg-pink-100 p-4 rounded-2xl shadow hover:scale-105 transition-transform">
+                <h4 className="font-bold text-purple-900">{sub}</h4>
+                <p className="text-gray-700 mt-1">Baholar, AI moduli, davomat shu yerda</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
-    <div class="card">
-        <h3>Tarix</h3>
-        <p>09:00 – 09:45</p>
-    </div>
-    <div class="card">
-        <h3>Fizika</h3>
-        <p>10:00 – 10:45</p>
-    </div>
-</div>
-
-<!-- POSTLAR (Kundalik kabi) -->
-<h2 class="section-title">Yangiliklar</h2>
-
-<div class="post">
-    <h4>🔔 Sinfingiz uchun yangi e’lon</h4>
-    <small>2 dekabr, 14:22</small>
-</div>
-
-<div class="post">
-    <h4>📘 Uy vazifalari yangilandi</h4>
-    <small>1 dekabr, 19:11</small>
-</div>
-
-<!-- AI BUTTON -->
-<div class="ai">🤖</div>
-
-</body>
-</html>
+  );
+}
